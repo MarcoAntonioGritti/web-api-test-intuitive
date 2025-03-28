@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "fd86e695-9fed-418a-924d-9faf9b04fe28",
+		"_postman_id": "cda51bae-b2eb-4121-9c9f-f653a824d1ee",
 		"name": "api-test-intuitive",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "40911129"
@@ -12,7 +12,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": ""
+					"raw": "{{base_url}}/api/consultar",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"consultar"
+					]
 				}
 			},
 			"response": []
