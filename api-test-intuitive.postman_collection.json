@@ -1,0 +1,21 @@
+{
+	"info": {
+		"_postman_id": "fd86e695-9fed-418a-924d-9faf9b04fe28",
+		"name": "api-test-intuitive",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40911129"
+	},
+	"item": [
+		{
+			"name": "consulta-relatorio-cadop-completo",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		}
+	]
+}

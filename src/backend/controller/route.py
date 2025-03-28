@@ -2,25 +2,27 @@ from http import HTTPStatus
 from flask import request, jsonify
 from src.backend.utils import read_csv
 from .blueprint import route_bp
+from flask_cors import cross_origin
 
 @route_bp.route('/consultar', methods=['GET'])
+@cross_origin() 
 def consultar():
-    # Parâmetro de consulta enviado pelo front-end (por exemplo, um parâmetro "data")
-    data_param = request.args.get('DATA')
+    data_param = request.args.get('Data_Registro_ANS')
 
-    # Ler o arquivo CSV
     df = read_csv()
+
+    # Removendo espaços extras nos valores da coluna Data_Registro_ANS
+    if 'Data_Registro_ANS' in df.columns:
+        df['Data_Registro_ANS'] = df['Data_Registro_ANS'].str.strip()
 
     # Filtrar os dados com base no parâmetro "data" (se fornecido)
     if data_param:
-        # Filtrando por data
-        df_filtered = df[df['DATA'] == data_param]
+        df_filtered = df[df['Data_Registro_ANS'] == data_param]
     else:
         df_filtered = df
 
     # Verificar se há resultados
     if not df_filtered.empty:
-        # Converter o DataFrame filtrado para uma lista de dicionários
         result = df_filtered.to_dict(orient='records')
         return jsonify(result), HTTPStatus.OK
     else:

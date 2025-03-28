@@ -2,15 +2,18 @@ import os
 from flask import Flask, jsonify,json
 from werkzeug.exceptions import HTTPException
 from src.backend.execeptions import CustomErrorException
+from flask_cors import CORS
 
-def create_app(environment=os.environ["ENVIRONMENT"]):
+cors = CORS()
 
-    # create and configure the app
-    app = Flask(__name__, instance_relative_config=True,instance_path=None)
-    app.config.from_object(f"src.backend.config.{environment.title()}Config")
+def create_app():
 
-    # register blueprint
-    from src.backend.controller.blueprint    import route_bp
+    # Criação e configuração simples da aplicação
+    app = Flask(__name__)
+    cors.init_app(app)
+
+    # registra blueprint
+    from src.backend.controller.blueprint import route_bp
     app.register_blueprint(route_bp)
 
 

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <title>Consulta de Relatórios</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            background: #fff;
+        }
+    
+        h2 {
+            color: #007bff;
+        }
+    
+        input {
+            padding: 10px;
+            width: 250px;
+            font-size: 16px;
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            outline: none;
+            margin-right: 10px;
+        }
+    
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+    
+        button:hover {
+            background-color: #0056b3;
+        }
+    
+        .error {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    
+        .data-item {
+            background: #f9f9f9;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+    
+        .data-item p {
+            margin: 5px 0;
+        }
+    
+        .data-item strong {
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app">
+        <h2>Consulta de Relatórios</h2>
+
+        <input type="text" v-model="dataFiltro" placeholder="Digite a data (YYYY-MM-DD)">
+        <button @click="consultarDados">Consultar</button>
+
+        <p v-if="erro" class="error">{{ erro }}</p>
+
+        <div v-if="dados.length">
+            <div v-for="(item, index) in dados" :key="index" class="data-item">
+                <p><strong>Bairro:</strong> {{ item.Bairro }}</p>
+                <p><strong>CEP:</strong> {{ item.CEP }}</p>
+                <p><strong>CNPJ:</strong> {{ item.CNPJ }}</p>
+                <p><strong>Cargo Representante:</strong> {{ item.Cargo_Representante }}</p>
+                <p><strong>Cidade:</strong> {{ item.Cidade }}</p>
+                <p><strong>Complemento:</strong> {{ item.Complemento }}</p>
+                <p><strong>DDD:</strong> {{ item.DDD }}</p>
+                <p><strong>Data Registro ANS:</strong> {{ item.Data_Registro_ANS }}</p>
+                <p><strong>Endereço Eletrônico:</strong> {{ item.Endereco_eletronico }}</p>
+                <p><strong>Fax:</strong> {{ item.Fax }}</p>
+                <p><strong>Logradouro:</strong> {{ item.Logradouro }}</p>
+                <p><strong>Modalidade:</strong> {{ item.Modalidade }}</p>
+                <p><strong>Nome Fantasia:</strong> {{ item.Nome_Fantasia }}</p>
+                <p><strong>Número:</strong> {{ item.Numero }}</p>
+                <p><strong>Razão Social:</strong> {{ item.Razao_Social }}</p>
+                <p><strong>Região de Comercialização:</strong> {{ item.Regiao_de_Comercializacao }}</p>
+                <p><strong>Registro ANS:</strong> {{ item.Registro_ANS }}</p>
+                <p><strong>Representante:</strong> {{ item.Representante }}</p>
+                <p><strong>Telefone:</strong> {{ item.Telefone }}</p>
+                <p><strong>UF:</strong> {{ item.UF }}</p>
+            </div>
+        </div>
+
+        <p v-else-if="!erro">Nenhum dado encontrado.</p>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    dataFiltro: "", 
+                    dados: [],       
+                    erro: ""        
+                };
+            },
+            methods: {
+                async consultarDados() {
+                    this.erro = "";
+
+                    const dataFormatada = this.dataFiltro.trim();
+
+                    if (!dataFormatada.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                        this.erro = "Data inválida. Formato esperado: YYYY-MM-DD.";
+                        return;
+                    }
+
+                    try {
+                        const url = dataFormatada 
+                            ? `http://127.0.0.1:5000/api/consultar?Data_Registro_ANS=${encodeURIComponent(dataFormatada)}`
+                            : `http://127.0.0.1:5000/api/consultar`;
+
+                        const response = await fetch(url);
+                        const text = await response.text();
+
+                        try {
+                            const safeText = text.replace(/NaN/g, "null"); // Substitui NaN por null
+                            const data = JSON.parse(safeText);
+                            if (response.ok) {
+                                this.dados = data;
+                            } else {
+                                this.dados = [];
+                                this.erro = data.message || "Erro ao consultar os dados.";
+                            }
+                        } catch (error) {
+                            this.erro = "Resposta inválida da API.";
+                            console.error("Erro ao parsear JSON:", text);
+                        }
+                    } catch (error) {
+                        this.erro = "Erro ao conectar com a API.";
+                        console.error("Erro de conexão:", error);
+                    }
+                }
+            }
+        }).mount('#app');
+    </script>
+
+</body>
+</html>
